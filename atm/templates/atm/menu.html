@@ -1,0 +1,250 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATM Machine</title>
+    <style>
+        /* Basic reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Global styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #333; /* Dark background to resemble ATM environment */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* ATM Machine container */
+        .atm-machine {
+            background: #222;
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            width: 350px;
+            padding: 20px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            border: 5px solid #555;
+            overflow: hidden;
+        }
+
+        /* ATM Screen */
+        .atm-screen {
+            background: #000;
+            color: #0f0;
+            font-family: 'Courier New', Courier, monospace;
+            border-radius: 10px;
+            width: 100%;
+            height: 150px;
+            margin-bottom: 20px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: inset 0 0 15px rgba(0, 255, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Screen animation (blinking effect) */
+        .atm-screen:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 255, 0, 0.1);
+            opacity: 0;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 0.2; }
+        }
+
+        /* ATM Title */
+        .atm-screen h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        /* Card Slot */
+        .card-slot {
+            background: #444;
+            width: 80%;
+            height: 25px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            position: relative;
+            animation: card-insert 2s infinite;
+        }
+
+        .card-slot:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #000;
+            box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        /* ATM Card Insert Animation */
+        @keyframes card-insert {
+            0% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(5px);
+            }
+            100% {
+                transform: translateY(0);
+            }
+        }
+
+        /* ATM Buttons as keypad */
+        .atm-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 10px;
+            width: 100%;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            width: calc(50% - 10px);
+            transition: background-color 0.3s ease;
+            position: relative;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Money slot */
+        .money-slot {
+            width: 80%;
+            height: 15px;
+            background-color: #222;
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .money {
+            width: 100%;
+            height: 10px;
+            background-color: green;
+            position: absolute;
+            top: -30px;
+            left: 0;
+            animation: dispense-money 3s infinite;
+        }
+
+        @keyframes dispense-money {
+            0% {
+                top: -30px;
+            }
+            50% {
+                top: 10px;
+            }
+            100% {
+                top: 10px;
+            }
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        /* Message with digital style */
+        .message {
+            color: #00ff00;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.2em;
+            margin-top: 20px;
+        }
+
+        /* Button animation */
+        @keyframes button-glow {
+            0% {
+                box-shadow: 0 0 5px rgba(0, 123, 255, 0.8);
+            }
+            100% {
+                box-shadow: 0 0 20px rgba(0, 123, 255, 0.8);
+            }
+        }
+
+        button:hover {
+            animation: button-glow 0.5s alternate infinite;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .atm-machine {
+                width: 90%;
+            }
+            button {
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="atm-machine">
+        <!-- ATM Screen with animation -->
+        <div class="atm-screen">
+            <h1>ATM Machine</h1>
+            <p class="message">{{ message }}</p>
+        </div>
+
+        <!-- Card Slot -->
+        <div class="card-slot"></div>
+
+        <!-- Money Slot -->
+        <div class="money-slot">
+            <div class="money"></div>
+        </div>
+
+        <!-- ATM Keypad-like buttons -->
+        <form method="post">
+            {% csrf_token %}
+            <div class="atm-buttons">
+                <button type="submit" name="action" value="check_balance">Check Balance</button>
+                <input type="number" name="amount" placeholder="Enter amount" required>
+                <button type="submit" name="action" value="deposit">Deposit Money</button>
+                <button type="submit" name="action" value="withdraw">Withdraw Money</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
